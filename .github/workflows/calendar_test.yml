@@ -3,38 +3,32 @@ name: Build and Deploy
 on: [push]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # Ensure full history is fetched for branch operations
-        token: ${{ secrets.GITHUB_TOKEN }}
+      # Step 1: Checkout your repository
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
+      # Step 2: Set up Node.js (optional, only if you need to build)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Build project # Replace with your actual build command
-      working-directory: calendar_test
-      run: |
-        npm ci
-        npm run build
+      # Step 3: Install dependencies
+      - working-directory: calendar_test
+        run: npm ci
 
-    - name: Push build folder using Git commands
-      run: |
-        # Configure Git user
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      # Step 4: Build project
+      - working-directory: calendar_test
+        run: npm run build
 
-        # Create a temporary directory for the build files to be the root of the new branch
-        mkdir gh-pages-temp
-        cp -r calendar_test/build/* gh-pages-temp/
-
-        # Switch to the new directory
-        cd gh-pages-temp
-
-        # Initialize as a new git repo, commit, and push
-        git init
-        git add .
-        git commit -m "Deploying build artifacts"
-        git push -f https://${{ secrets.GITHUB_TOKEN }}@github.com{{ github.repository }}.git HEAD:gh-pages
-      # Note: This approach overwrites the remote branch history with just the build folder contents.
+      # Step 5: Push build folder to another branch
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v7
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./calendar_test/build      # path to your build folder
+          publish_branch: build     # target branch
