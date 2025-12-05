@@ -18,7 +18,7 @@ jobs:
 
       - name: Run script
         working-directory: ./calendar_test
-        run: npm start
+        run: npm run build
 
       - name: Switch to clean build branch
         run: |
@@ -39,8 +39,8 @@ jobs:
 
       - name: Copy build output
         run: |
-          # Adjust this to where your build files are actually created
-          cp -r calendar_test/build/* .
+          mkdir -p ./  # ensure the root exists
+          cp calendar_test/build/calendar.ics .
 
 
       - name: Configure git

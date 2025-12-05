@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "build": "node index.js"
   },
   "dependencies": {
     "dayjs": "^1.11.19",
