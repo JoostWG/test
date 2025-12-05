@@ -45,9 +45,11 @@ jobs:
 
 
       - name: Copy build output
+        working-directory: ./calendar_test
+
         run: |
           mkdir -p ./  # ensure the root exists
-          cp calendar_test/build/calendar.ics .
+          cp ./build/* ../
 
 
       - name: Configure git
