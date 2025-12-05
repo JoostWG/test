@@ -20,6 +20,13 @@ jobs:
         working-directory: ./calendar_test
         run: npm run build
 
+      - name: Debug build output
+        working-directory: ./calendar_test
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -R
+
+
       - name: Switch to clean build branch
         run: |
           # Fetch branch if it exists
