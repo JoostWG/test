@@ -27,7 +27,7 @@ jobs:
 
       # Step 5: Push build folder to another branch
       - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v7
+        uses: peaceiris/actions-gh-pages
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./calendar_test/build      # path to your build folder
