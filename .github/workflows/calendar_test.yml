@@ -12,6 +12,7 @@ jobs:
         fetch-depth: 0 # Ensure full history is fetched for branch operations
 
     - name: Build project # Replace with your actual build command
+      working-directory: calendar_test
       run: |
         npm ci
         npm run build
