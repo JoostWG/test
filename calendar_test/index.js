@@ -38,5 +38,7 @@ for (let m = 0; m < 12; m++) {
 //     url: 'http://google.com/',
 // });
 
+// test
+
 fs.mkdir('./build', () => { });
 fs.writeFile('./build/calendar.ics', calendar.toString(), () => { });
