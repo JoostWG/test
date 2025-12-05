@@ -1,66 +1,59 @@
 name: Calendar
-
+# ChatGPT
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write   # allows pushing to build branch
+
     steps:
+      # 1️⃣ Checkout repository
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        working-directory: ./calendar_test
-        run: npm ci
-
-      - name: Run script
-        working-directory: ./calendar_test
-        run: npm run build
-
-      - name: Debug build output
-        working-directory: ./calendar_test
+      # 2️⃣ Install dependencies and build
+      - name: Build calendar
         run: |
-          echo "Current directory: $(pwd)"
-          ls -R
+          cd calendar_test
+          npm ci
+          npm run build
+          echo "--- Build folder contents ---"
+          ls -R build
 
-
+      # 3️⃣ Switch to clean build branch
       - name: Switch to clean build branch
         run: |
-          # Fetch branch if it exists
           git fetch origin build || true
-
-          # Switch to build branch or create orphan
           if git rev-parse --verify origin/build; then
             git checkout build
           else
             git checkout --orphan build
           fi
-
-          # Completely clean the working directory (tracked + untracked)
+          # Remove all files from branch
           git ls-files -z | xargs -0 rm -f || true
           rm -rf * .[^.]* || true
 
+      # 4️⃣ Copy generated calendar file into branch root
+      - name: Copy calendar.ics
+        run: cp calendar_test/build/calendar.ics .
 
-      - name: Copy build output
-        working-directory: ./
-
-        run: |
-          mkdir -p ./  # ensure the root exists
-          cp ./calendar_test/build/* .
-
-
+      # 5️⃣ Configure git
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      # 6️⃣ Commit changes
       - name: Commit changes
         run: |
           git add -A
           git commit -m "Auto-build [skip ci]" || echo "No changes to commit"
 
+      # 7️⃣ Push changes to build branch
       - name: Push changes
         run: git push -f origin build
