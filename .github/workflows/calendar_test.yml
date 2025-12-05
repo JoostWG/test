@@ -12,6 +12,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Joe mama
+        run: cd ./calendar_test
+
       - name: Install dependencies
         run: npm ci
 
