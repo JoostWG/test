@@ -20,17 +20,22 @@ jobs:
         working-directory: ./calendar_test
         run: npm start
 
-      - name: Switch to empty build branch
+      - name: Switch to clean build branch
         run: |
+          # Fetch branch if it exists
+          git fetch origin build || true
+
+          # Switch to build branch or create orphan
           if git rev-parse --verify origin/build; then
-            # Branch exists → checkout normally
             git checkout build
-            git rm -rf . || true
           else
-            # Create empty branch with no files
             git checkout --orphan build
-            git rm -rf . || true
           fi
+
+          # Completely clean the working directory (tracked + untracked)
+          git ls-files -z | xargs -0 rm -f || true
+          rm -rf * .[^.]* || true
+
 
       - name: Copy build output
         run: |
