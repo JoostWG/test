@@ -5,9 +5,7 @@ import isoWeek from 'dayjs/plugin/isoWeek.js';
 
 dayjs.extend(isoWeek);
 
-const calendar = ical({ name: 'Epic calendar' });
-
-
+const calendar = ical({ name: 'Luchtalarm 2026' });
 
 for (let m = 0; m < 12; m++) {
     let d = dayjs().year(2026).month(m).startOf('month');
@@ -23,22 +21,8 @@ for (let m = 0; m < 12; m++) {
         start: start.toDate(),
         end: end.toDate(),
         summary: 'Luchtalarm',
-        // description: 'It works ;)',
-        // location: 'my room',
-        // url: 'http://google.com/',
     });
 }
 
-// calendar.createEvent({
-//     start: now.toDate(),
-//     end: now.add(1, 'day').toDate(),
-//     summary: 'Example Event',
-//     description: 'It works ;)',
-//     location: 'my room',
-//     url: 'http://google.com/',
-// });
-
-// test
-
-fs.mkdir('./build', () => { });
-fs.writeFile('./build/calendar.ics', calendar.toString(), () => { });
+fs.mkdir('build', () => { });
+fs.writeFile('build/calendar.ics', calendar.toString(), () => { });
