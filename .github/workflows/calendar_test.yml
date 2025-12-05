@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write   # allows pushing to build branch
+      contents: write
 
     steps:
       # 1️⃣ Checkout repository
@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2️⃣ Install dependencies and build
+      # 2️⃣ Build calendar
       - name: Build calendar
         run: |
           cd calendar_test
@@ -25,7 +25,11 @@ jobs:
           echo "--- Build folder contents ---"
           ls -R build
 
-      # 3️⃣ Switch to clean build branch
+      # 3️⃣ Copy calendar file to repo root BEFORE switching branches
+      - name: Copy calendar.ics to repo root
+        run: cp calendar_test/build/calendar.ics .
+
+      # 4️⃣ Switch to clean build branch
       - name: Switch to clean build branch
         run: |
           git fetch origin build || true
@@ -34,26 +38,25 @@ jobs:
           else
             git checkout --orphan build
           fi
-          # Remove all files from branch
           git ls-files -z | xargs -0 rm -f || true
           rm -rf * .[^.]* || true
 
-      # 4️⃣ Copy generated calendar file into branch root
-      - name: Copy calendar.ics
-        run: cp calendar_test/build/calendar.ics .
+      # 5️⃣ Move the copied file into the branch
+      - name: Move calendar.ics into branch
+        run: mv calendar.ics .
 
-      # 5️⃣ Configure git
+      # 6️⃣ Configure git
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # 6️⃣ Commit changes
+      # 7️⃣ Commit changes
       - name: Commit changes
         run: |
           git add -A
           git commit -m "Auto-build [skip ci]" || echo "No changes to commit"
 
-      # 7️⃣ Push changes to build branch
+      # 8️⃣ Push changes
       - name: Push changes
         run: git push -f origin build
