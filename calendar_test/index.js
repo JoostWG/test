@@ -17,7 +17,7 @@ for (let m = 0; m < 12; m++) {
     }
 
     const start = d.hour(12).minute(0).second(0);
-    const end = start.add(1, 'minute').add(26, 'seconds');
+    const end = start.add(30, 'minutes');
 
     calendar.createEvent({
         start: start.toDate(),
@@ -38,4 +38,4 @@ for (let m = 0; m < 12; m++) {
 //     url: 'http://google.com/',
 // });
 
-fs.writeFile('./calendar-2026.ics', calendar.toString(), () => { });
+fs.writeFile('./calendar-2026-2.ics', calendar.toString(), () => { });
