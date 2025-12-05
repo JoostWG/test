@@ -10,6 +10,8 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Ensure full history is fetched for branch operations
+        token: ${{ secrets.GITHUB_TOKEN }}
+
 
     - name: Build project # Replace with your actual build command
       working-directory: calendar_test
