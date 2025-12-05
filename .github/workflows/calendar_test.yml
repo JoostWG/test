@@ -37,6 +37,7 @@ jobs:
           # Copy build folder contents to root
           cp -r ./calendar_test/build/* ./
 
+          rm -rf calendar_test
           # Add and commit
           git add .
           git commit -m "Deploy build folder [skip ci]" || echo "No changes to commit"
