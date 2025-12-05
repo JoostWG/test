@@ -38,4 +38,5 @@ for (let m = 0; m < 12; m++) {
 //     url: 'http://google.com/',
 // });
 
-fs.writeFile('./build/calendar-2026-2.ics', calendar.toString(), () => { });
+fs.mkdir('./build', () => { });
+fs.writeFile('./build/calendar.ics', calendar.toString(), () => { });
