@@ -20,6 +20,24 @@ jobs:
         working-directory: ./calendar_test
         run: npm start
 
+      - name: Switch to empty build branch
+        run: |
+          if git rev-parse --verify origin/build; then
+            # Branch exists → checkout normally
+            git checkout build
+            git rm -rf . || true
+          else
+            # Create empty branch with no files
+            git checkout --orphan build
+            git rm -rf . || true
+          fi
+
+      - name: Copy build output
+        run: |
+          # Adjust this to where your build files are actually created
+          cp -r calendar_test/build/* .
+
+
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
@@ -27,9 +45,8 @@ jobs:
 
       - name: Commit changes
         run: |
-          git add .
-          git commit -m "build" || echo "No changes to commit"
+          git add -A
+          git commit -m "Auto-build [skip ci]" || echo "No changes to commit"
 
       - name: Push changes
-        run: |
-          git push
+        run: git push -f origin build
