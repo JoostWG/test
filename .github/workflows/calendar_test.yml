@@ -45,11 +45,11 @@ jobs:
 
 
       - name: Copy build output
-        working-directory: ./calendar_test
+        working-directory: ./
 
         run: |
           mkdir -p ./  # ensure the root exists
-          cp ./build/* ../
+          cp ./calendar_test/build/* .
 
 
       - name: Configure git
