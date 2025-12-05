@@ -1,6 +1,11 @@
 name: Build calendar
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - calendar_test/index.js
 
 jobs:
   deploy:
