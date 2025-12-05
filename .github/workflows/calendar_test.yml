@@ -19,12 +19,22 @@ jobs:
         npm ci
         npm run build
 
-    - name: Deploy build folder to a separate branch
-      uses: s0/git-publish-subdir-action@develop
-      env:
-        REPO: self
-        BRANCH: build # Target branch name (e.g., gh-pages, deploy)
-        FOLDER: calendar_test/build     # Your build output folder (e.g., dist, build)
-        COMMIT_MESSAGE: "Deploying build artifacts ({sha})"
-      with:
-        args: -am "${COMMIT_MESSAGE}"
+    - name: Push build folder using Git commands
+      run: |
+        # Configure Git user
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        # Create a temporary directory for the build files to be the root of the new branch
+        mkdir gh-pages-temp
+        cp -r dist/* gh-pages-temp/
+
+        # Switch to the new directory
+        cd gh-pages-temp
+
+        # Initialize as a new git repo, commit, and push
+        git init
+        git add .
+        git commit -m "Deploying build artifacts"
+        git push -f https://${{ secrets.GITHUB_TOKEN }}@github.com{{ github.repository }}.git HEAD:gh-pages
+      # Note: This approach overwrites the remote branch history with just the build folder contents.
