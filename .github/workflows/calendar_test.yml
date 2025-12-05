@@ -27,7 +27,7 @@ jobs:
 
         # Create a temporary directory for the build files to be the root of the new branch
         mkdir gh-pages-temp
-        cp -r dist/* gh-pages-temp/
+        cp -r calendar_test/build/* gh-pages-temp/
 
         # Switch to the new directory
         cd gh-pages-temp
