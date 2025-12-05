@@ -7,28 +7,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout your repository
+      # Step 1: Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (optional, only if you need to build)
+      # Step 2: Setup Node.js (if needed)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
       # Step 3: Install dependencies
-      - working-directory: calendar_test
-        run: npm ci
+      - run: npm install
+        working-directory: calendar_test
 
       # Step 4: Build project
-      - working-directory: calendar_test
-        run: npm run build
+      - run: npm run build
+        working-directory: calendar_test
 
-      # Step 5: Push build folder to another branch
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./calendar_test/build      # path to your build folder
-          publish_branch: build     # target branch
+      # Step 5: Push build folder to separate branch
+      - name: Push build folder to build branch
+        run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Checkout the target branch (create if it doesn't exist)
+          git fetch origin build || true
+          git checkout build || git checkout --orphan build
+
+          # Remove existing files
+          git rm -rf . || true
+
+          # Copy build folder contents to root
+          cp -r ./calendar_test/build/* ./
+
+          # Add and commit
+          git add .
+          git commit -m "Deploy build folder [skip ci]" || echo "No changes to commit"
+
+          # Push to build branch
+          git push origin build --force
