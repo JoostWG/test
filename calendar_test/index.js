@@ -4,32 +4,68 @@ import fs from 'node:fs';
 import isoWeek from 'dayjs/plugin/isoWeek.js';
 import timezone from 'dayjs/plugin/timezone.js';
 import utc from 'dayjs/plugin/timezone.js';
+import { gregorianEaster } from 'date-easter'
 
 dayjs.extend(utc);
 dayjs.extend(isoWeek);
 dayjs.extend(timezone);
 
-dayjs.tz.setDefault('Europe/Amsterdam');
+const currentYear = dayjs().year();
+const years = [currentYear, currentYear + 1];
 
-const calendar = ical({ name: 'Luchtalarm 2026' });
+const calendar = ical({
+    name: years.length > 1
+        ? `Luchtalarm ${years.at(0)}-${years.at(-1)}`
+        : `Luchtalarm ${years.at(0)}`,
+});
 
-for (let m = 0; m < 12; m++) {
-    let d = dayjs().year(2026).month(m).startOf('month').startOf('day').startOf('hour').startOf('minute').startOf('second');
+for (const year of years) {
+    const easter = gregorianEaster(year);
 
-    while (d.isoWeekday() !== 1) {
-        d = d.add(1, "day");
+    // We only care about mondays so only second easter day is important here
+    const secondEasterDay = dayjs(`${easter.year}-${easter.month}-${easter.day}`).add(1, 'day');
+
+    const skipped = [
+        `1-1-${year}`, // Nieuwjaarsdag
+        secondEasterDay.format('D-M-YYYY'), // Tweede paasdag
+        `27-4-${year}`, // Koningsdag
+        `4-5-${year}`, // Herdenking
+        `5-5-${year}`, // Bevrijdingsdag
+        secondEasterDay.add(7, 'weeks').format('D-M-YYYY'), // Tweede pinksterdag
+    ];
+
+    for (let month = 0; month < 12; month++) {
+        let date = dayjs().year(year).month(month).startOf('month');
+
+        while (date.isoWeekday() !== 1) {
+            date = date.add(1, "day");
+        }
+
+        const start = date;
+        const end = date;
+
+        if (skipped.includes(date.format('D-M-YYYY'))) {
+            console.log(`Skipping ${date.format('dddd D MMMM YYYY')}`);
+
+            calendar.createEvent({
+                allDay: true,
+                start: start.toDate(),
+                end: end.toDate(),
+                summary: 'GEEN luchtalarm i.v.m. feestdag',
+            });
+
+            continue;
+        }
+
+        console.log(`Adding event for ${date.format('dddd D MMMM YYYY')}`);
+
+        calendar.createEvent({
+            allDay: true,
+            start: start.toDate(),
+            end: end.toDate(),
+            summary: 'Luchtalarm',
+        });
     }
-
-    const start = d.hour(12).minute(0).second(0);
-    const end = start.add(30, 'minutes');
-
-    console.log(start.toDate())
-    calendar.createEvent({
-        allDay: true,
-        start: start.toDate(),
-        end: end.toDate(),
-        summary: 'Luchtalarm',
-    });
 }
 
 fs.mkdir('build', () => { });
