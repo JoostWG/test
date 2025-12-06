@@ -14,7 +14,7 @@ dayjs.tz.setDefault('Europe/Amsterdam');
 const calendar = ical({ name: 'Luchtalarm 2026' });
 
 for (let m = 0; m < 12; m++) {
-    let d = dayjs().year(2026).month(m).startOf('month');
+    let d = dayjs().year(2026).month(m).startOf('month').startOf('day').startOf('hour').startOf('minute').startOf('second');
 
     while (d.isoWeekday() !== 1) {
         d = d.add(1, "day");
@@ -23,7 +23,9 @@ for (let m = 0; m < 12; m++) {
     const start = d.hour(12).minute(0).second(0);
     const end = start.add(30, 'minutes');
 
+    console.log(start.toDate())
     calendar.createEvent({
+        allDay: true,
         start: start.toDate(),
         end: end.toDate(),
         summary: 'Luchtalarm',
