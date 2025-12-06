@@ -51,7 +51,7 @@ for (const year of years) {
                 allDay: true,
                 start: start.toDate(),
                 end: end.toDate(),
-                summary: 'GEEN luchtalarm i.v.m. feestdag',
+                summary: 'GEEN luchtalarm',
             });
 
             continue;
