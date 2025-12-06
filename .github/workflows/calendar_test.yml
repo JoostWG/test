@@ -47,7 +47,7 @@ jobs:
       - name: Commit
         run: |
           git add .
-          git commit -m "Deploy build folder [skip ci]" || echo "No changes to commit"
+          git commit -m "Update calendar" || echo "No changes to commit"
 
       - name: Push
         run: |
