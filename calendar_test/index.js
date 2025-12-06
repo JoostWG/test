@@ -2,8 +2,14 @@ import dayjs from 'dayjs';
 import ical from 'ical-generator';
 import fs from 'node:fs';
 import isoWeek from 'dayjs/plugin/isoWeek.js';
+import timezone from 'dayjs/plugin/timezone.js';
+import utc from 'dayjs/plugin/timezone.js';
 
+dayjs.extend(utc);
 dayjs.extend(isoWeek);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault('Europe/Amsterdam');
 
 const calendar = ical({ name: 'Luchtalarm 2026' });
 
