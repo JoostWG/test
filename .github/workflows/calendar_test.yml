@@ -8,7 +8,7 @@ on:
       - calendar_test/index.js
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
